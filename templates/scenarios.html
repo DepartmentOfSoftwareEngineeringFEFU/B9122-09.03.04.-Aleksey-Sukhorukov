@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Сценарии моделирования – ИСМДС{% endblock %}
+
+{% block content %}
+<h3>Сценарии моделирования</h3>
+
+<div class="row">
+
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">
+                {% if edit_scenario %}
+                    Редактирование сценария
+                {% else %}
+                    Создание сценария
+                {% endif %}
+            </div>
+
+            <div class="card-body">
+                <form method="post">
+
+                    {% if edit_scenario %}
+                        <input type="hidden" name="action" value="update">
+                        <input type="hidden" name="scenario_id" value="{{ edit_scenario.id }}">
+                    {% else %}
+                        <input type="hidden" name="action" value="create">
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label">Название сценария</label>
+                        <input type="text"
+                               class="form-control"
+                               name="name"
+                               value="{{ edit_scenario.name if edit_scenario else '' }}">
+                    </div>
+
+
+
+                    <div class="mb-3">
+                        <label class="form-label">Акватория</label>
+                        <select class="form-select" name="aquatory_id">
+                            {% for aq in aquatories %}
+                                <option value="{{ aq.id }}"
+                                    {% if edit_scenario and edit_scenario.aquatory_id == aq.id %}selected{% endif %}>
+                                    {{ aq.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Уровень трафика</label>
+                        <select class="form-select" name="level_id">
+                            {% for level in traffic_levels %}
+                                <option value="{{ level.id }}"
+                                    {% if edit_scenario and edit_scenario.level_id == level.id %}selected{% endif %}>
+                                    {{ level.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Модель движения</label>
+                        <select class="form-select" name="model_id">
+                            {% for model in model_configs %}
+                                <option value="{{ model.id }}"
+                                    {% if edit_scenario and edit_scenario.model_id == model.id %}selected{% endif %}>
+                                    {{ model.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Начало моделирования</label>
+                        <input type="datetime-local"
+                               class="form-control"
+                               name="start_time"
+                               value="{% if edit_scenario and edit_scenario.start_time %}{{ edit_scenario.start_time.strftime('%Y-%m-%dT%H:%M') }}{% endif %}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Окончание моделирования</label>
+                        <input type="datetime-local"
+                               class="form-control"
+                               name="end_time"
+                               value="{% if edit_scenario and edit_scenario.end_time %}{{ edit_scenario.end_time.strftime('%Y-%m-%dT%H:%M') }}{% endif %}">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mb-2">
+                        {% if edit_scenario %}
+                            Сохранить изменения
+                        {% else %}
+                            Создать сценарий
+                        {% endif %}
+                    </button>
+
+                    {% if edit_scenario %}
+                        <a href="{{ url_for('simulation.scenarios_page') }}"
+                           class="btn btn-outline-secondary w-100">
+                            Отмена
+                        </a>
+                    {% endif %}
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card mb-3">
+            <div class="card-header">Список сценариев</div>
+
+            <div class="card-body">
+                <table class="table table-sm table-hover">
+                    <thead>
+                    <tr>
+                        <th>ИД</th>
+                        <th>Название</th>
+                        <th>Акватория</th>
+                        <th>Уровень</th>
+                        <th>Модель</th>
+                        <th>Период</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for s in scenarios %}
+                        <tr>
+                            <td>{{ s.id }}</td>
+                            <td>{{ s.name }}</td>
+                            <td>{{ s.aquatory.name if s.aquatory else '—' }}</td>
+                            <td>{{ s.traffic_level.name if s.traffic_level else '—' }}</td>
+                            <td>{{ s.model.name if s.model else '—' }}</td>
+                            <td>
+                                {% if s.start_time and s.end_time %}
+                                    {{ s.start_time }} — {{ s.end_time }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('simulation.scenarios_page', edit_id=s.id) }}"
+                                   class="btn btn-sm btn-outline-primary">
+                                    Изменить
+                                </a>
+
+                                <form method="post" class="d-inline">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="scenario_id" value="{{ s.id }}">
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Удалить сценарий?')">
+                                        Удалить
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-muted text-center">
+                                Сценарии пока не созданы.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

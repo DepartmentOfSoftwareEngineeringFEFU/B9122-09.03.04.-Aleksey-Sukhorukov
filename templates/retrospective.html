@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Ретроспективные данные – ИСМДС{% endblock %}
+
+{% block content %}
+<h3>Ретроспективные данные</h3>
+
+<div class="row">
+    <!-- фильтры  -->
+    <div class="col-md-3">
+    <div class="card mb-3">
+        <div class="card-header">Фильтры</div>
+        <div class="card-body">
+            <form method="post">
+                <input type="hidden" name="action" value="stats">
+
+                <div class="mb-3">
+                    <label class="form-label">Сессия загрузки</label>
+                    <select class="form-select" name="session_id">
+                        <option value="">Выберите сессию...</option>
+                        {% for s in sessions %}
+                            <option value="{{ s.id }}">Сессия {{ s.id }} ({{ s.original_filename }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+
+
+                <button class="btn btn-primary w-100 mb-2" type="submit">
+                    Показать статистику
+                </button>
+                <button class="btn btn-outline-secondary w-100" type="button">
+                    Экспорт траекторий
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <!-- список сессий -->
+    <div class="col-md-9">
+        <div class="card mb-3">
+            <div class="card-header">Список сессий загрузки</div>
+            <div class="card-body">
+                <form method="post">
+                    <input type="hidden" name="action" value="delete">
+                    <table class="table table-sm table-hover">
+                    <thead>
+                    <tr>
+                        <th>ИД</th>
+                        <th>Акватория</th>
+                        <th>Период</th>
+                        <th>Источник</th>
+                        <th>Записей</th>
+                        <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for s in sessions %}
+            <tr>
+                <td>{{ s.id }}</td>
+                <td>{{ s.aquatory.name if s.aquatory else '—' }}</td>
+                <td>
+                    {% if s.time_start and s.time_end %}
+                        {{ s.time_start }} — {{ s.time_end }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+                <td>{{ s.file_format }}</td>
+                <td>{{ s.total_records }}</td>
+                <td>
+                    <button type="submit"
+                            name="delete_id"
+                            value="{{ s.id }}"
+                            class="btn btn-sm btn-outline-danger">
+                        Удалить
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</form>
+                {% if stats %}
+    <div class="card mt-3">
+        <div class="card-header">
+            Статистика по сессии {{ stats.session.id }}
+        </div>
+        <div class="card-body">
+            <p class="mb-1"><strong>Файл:</strong> {{ stats.session.original_filename }}</p>
+            <p class="mb-1"><strong>Акватория:</strong>
+                {{ stats.session.aquatory.name if stats.session.aquatory else '—' }}
+            </p>
+            <p class="mb-1"><strong>Период данных:</strong>
+                {% if stats.session.time_start and stats.session.time_end %}
+                    {{ stats.session.time_start }} — {{ stats.session.time_end }}
+                {% else %}
+                    —
+                {% endif %}
+            </p>
+            <p class="mb-1"><strong>Количество точек:</strong> {{ stats.points }}</p>
+            <p class="mb-1"><strong>Количество судов:</strong> {{ stats.vessels }}</p>
+            <p class="mb-1"><strong>Диапазон скоростей:</strong>
+                {% if stats.speed_min is not none %}
+                    от {{ stats.speed_min|round(2) }} до {{ stats.speed_max|round(2) }}
+                {% else %}
+                    — (данные о скорости отсутствуют)
+                {% endif %}
+            </p>
+            <p class="mb-1"><strong>Средняя скорость:</strong>
+                {% if stats.speed_avg is not none %}
+                    {{ stats.speed_avg|round(2) }}
+                {% else %}
+                    —
+                {% endif %}
+            </p>
+            <p class="mb-1"><strong>Интенсивность трафика I(a):</strong>
+                {% if stats.traffic_intensity is not none %}
+                    {{ stats.traffic_intensity|round(4) }} судов/км²
+                {% else %}
+                    — (площадь акватории не задана)
+                {% endif %}
+            </p>
+        </div>
+    </div>
+{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

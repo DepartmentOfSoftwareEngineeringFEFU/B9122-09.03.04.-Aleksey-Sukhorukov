@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация – ИСМДС{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="card shadow-sm" style="max-width: 400px; width: 100%;">
+        <div class="card-header text-center">
+            <h5 class="mb-0">Регистрация пользователя</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <div class="mb-3">
+                    <label for="login" class="form-label">Логин</label>
+                    <input type="text" class="form-control" id="login" name="login"
+                           placeholder="Придумайте логин">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Пароль</label>
+                    <input type="password" class="form-control" id="password" name="password"
+                           placeholder="Придумайте пароль">
+                </div>
+                <div class="mb-3">
+                    <label for="password2" class="form-label">Подтверждение пароля</label>
+                    <input type="password" class="form-control" id="password2" name="password2"
+                           placeholder="Повторите пароль">
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

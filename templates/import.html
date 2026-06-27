@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Импорт данных АИС – ИСМДС{% endblock %}
+
+{% block content %}
+<h3>Импорт ретроспективных данных АИС</h3>
+
+<div class="row">
+    <!-- параметры импорта -->
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">Параметры импорта</div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label">Файл данных</label>
+                        <input type="file" class="form-control" name="data_file">
+                        <div class="form-text">Ожидается CSV с полями mmsi, timestamp, lat, lon, sog, cog.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Формат файла</label>
+                        <input type="text" class="form-control" value="CSV" disabled >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Акватория</label>
+                        <select class="form-select" name="aquatory_id">
+                            {% for aq in aquatories %}
+                                <option value="{{ aq.id }}">{{ aq.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Временной интервал </label>
+                        <div class="input-group">
+                            <input type="datetime-local" class="form-control">
+                            <span class="input-group-text">–</span>
+                            <input type="datetime-local" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Максимальный интервал между сообщениями, мин</label>
+                        <input type="number" class="form-control" value="10">
+                    </div>
+
+                    <button type="submit" name="action" value="check"
+                            class="btn btn-outline-secondary w-100 mb-2">
+                        Проверить файл
+                    </button>
+                    <button type="submit" name="action" value="import"
+                            class="btn btn-primary w-100">
+                        Импортировать
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- предварительный отчёт -->
+    <div class="col-md-8">
+        <div class="card mb-3">
+            <div class="card-header">Предварительный отчёт по файлу</div>
+            <div class="card-body">
+
+                <table class="table table-sm">
+                    <tbody>
+                    <tr>
+                        <th scope="row">Всего записей</th>
+                        <td>{{ stats.total if stats else '—' }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Корректных записей</th>
+                        <td>{{ stats.valid if stats else '—' }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Ошибочных записей</th>
+                        <td>{{ stats.invalid if stats else '—' }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Период данных</th>
+                        <td>{{ stats.period if stats and stats.period else '—' }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

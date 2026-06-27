@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Вход – ИСМДС{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="card shadow-sm" style="max-width: 400px; width: 100%;">
+        <div class="card-header text-center">
+            <h5 class="mb-0">Система<br>моделирования движения судов</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <div class="mb-3">
+                    <label for="login" class="form-label">Логин</label>
+                    <input type="text" class="form-control" id="login" name="login"
+                           placeholder="Введите логин">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Пароль</label>
+                    <input type="password" class="form-control" id="password" name="password"
+                           placeholder="Введите пароль">
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mb-2">Войти</button>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-outline-secondary w-100">
+                    Зарегестрироваться
+                </a>
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
